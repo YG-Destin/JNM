@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>J & M Synastry + Transit Chart</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    #chart { width: 90vw; height: 80vh; }
+    #controls { margin-bottom: 20px; }
+    label { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h2>J & M Synastry + Transit Chart</h2>
+
+  <!-- 날짜·시간 선택 -->
+  <div id="controls">
+    <label for="dateInput">날짜·시간 선택: </label>
+    <input type="datetime-local" id="dateInput" value="2025-09-03T12:00">
+    <button onclick="drawChart()">불러오기</button>
+  </div>
+
+  <div id="chart"></div>
+
+  <script>
+    // =========================
+    // 1. 네이탈 데이터 (예시)
+    // =========================
+    const natalJ = {
+      Sun:  { sign: "Capricorn", degree: 10.93 },
+      Moon: { sign: "Libra", degree: 23.75 },
+      Mercury: { sign: "Capricorn", degree: 27.90 },
+      Venus: { sign: "Sagittarius", degree: 18.26 },
+      Mars:  { sign: "Aries", degree: 20.38 },
+      Jupiter:{ sign: "Taurus", degree: 26.70 },
+      Saturn: { sign: "Capricorn", degree: 5.63 },
+      Uranus: { sign: "Capricorn", degree: 1.77 },
+      Neptune:{ sign: "Capricorn", degree: 9.93 },
+      Pluto:  { sign: "Scorpio", degree: 14.55 }
+    };
+
+    const natalM = {
+      Sun:  { sign: "Aries", degree: 6.17 },
+      Moon: { sign: "Leo", degree: 12.40 },
+      Mercury: { sign: "Pisces", degree: 9.65 },
+      Venus: { sign: "Taurus", degree: 21.70 },
+      Mars:  { sign: "Leo", degree: 26.58 },
+      Jupiter:{ sign: "Virgo", degree: 1.65 },
+      Saturn: { sign: "Virgo", degree: 22.65 },
+      Uranus: { sign: "Scorpio", degree: 25.25 },
+      Neptune:{ sign: "Sagittarius", degree: 22.67 },
+      Pluto:  { sign: "Libra", degree: 20.78 }
+    };
+
+    // =========================
+    // 2. 트랜싯 데이터 불러오기
+    // =========================
+    async function fetchTransit(dateTime) {
+      // dateTime은 "2025-09-03T12:00" 형태
+      const url = `https://astronvim.vercel.app/api/transits?date=${dateTime}:00Z`;
+      const res = await fetch(url);
+      return await res.json();
+    }
+
+    // =========================
+    // 3. 차트 그리기
+    // =========================
+    async function drawChart() {
+      const dateInput = document.getElementById("dateInput").value;
+      if (!dateInput) return;
+
+      const transit = await fetchTransit(dateInput);
+
+      const natalPoints = [];
+      const transitPoints = [];
+      const labelsNatal = [];
+      const labelsTransit = [];
+
+      // J & M 행성
+      for (const [p, d] of Object.entries(natalJ)) {
+        natalPoints.push(d.degree);
+        labelsNatal.push("J " + p);
+      }
+      for (const [p, d] of Object.entries(natalM)) {
+        natalPoints.push(d.degree);
+        labelsNatal.push("M " + p);
+      }
+      // Transit
+      for (const [p, d] of Object.entries(transit)) {
+        transitPoints.push(d.degree);
+        labelsTransit.push("T " + p);
+      }
+
+      const traceNatal = {
+        type: "scatterpolar",
+        r: Array(natalPoints.length).fill(1),
+        theta: natalPoints,
+        mode: "markers+text",
+        text: labelsNatal,
+        textposition: "top center",
+        marker: { size: 10, color: "blue" },
+        name: "Natal (J&M)"
+      };
+
+      const traceTransit = {
+        type: "scatterpolar",
+        r: Array(transitPoints.length).fill(1.2),
+        theta: transitPoints,
+        mode: "markers+text",
+        text: labelsTransit,
+        textposition: "bottom center",
+        marker: { size: 9, color: "red" },
+        name: "Transit"
+      };
+
+      const layout = {
+        polar: {
+          radialaxis: { visible: false, range: [0, 1.5] },
+          angularaxis: { direction: "clockwise" }
+        },
+        showlegend: true,
+        title: `Transit Chart @ ${dateInput}`
+      };
+
+      Plotly.newPlot("chart", [traceNatal, traceTransit], layout);
+    }
+
+    // 초기 실행
+    drawChart();
+  </script>
+</body>
+</html>
