@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>J & M 시너스트리 + 트랜싯</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background:#f8f8f8; }
+    #chart { margin-top: 20px; }
+    input { margin: 10px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <h2>J & M 시너스트리 + 트랜싯 </h2>
+
+  <!-- 날짜/시간 입력 -->
+  <label for="datetime">날짜와 시간 선택:</label>
+  <input type="datetime-local" id="datetime" value="2025-09-03T18:00">
+
+  <button onclick="loadChart()">차트 불러오기</button>
+
+  <!-- 차트 이미지 표시 영역 -->
+  <div id="chart"></div>
+
+  <script>
+    async function loadChart() {
+      const datetime = document.getElementById("datetime").value;
+      if (!datetime) {
+        alert("날짜와 시간을 선택하세요!");
+        return;
+      }
+
+      // 🌍 위치 (예시: 서울) - 위도, 경도
+      const latitude = 37.5665;
+      const longitude = 126.9780;
+
+      // 🔑  AstronomyAPI 발급 ID/Secret 넣기
+      const APP_ID = "0ace3ece-819d-427b-b7a2-5e8b9461eb8b";
+      const APP_SECRET = "f4fbdab592c38875ad0b31163d5f71bc97a04ebf3088f024e5cdf935a2cb9fc3752cd8ab71c7a65bf4cc06752773464de708a7eceda622b52f8eb114d4de39a0be6ed7025293ce268e8a11738bc8c763dfe2a573d12954c057b6c167c0063816bc9d7edc03a78639e81c710cb253d16d";
+
+      // API URL
+      const url = `https://api.astronomyapi.com/api/v2/studio/astro_chart?date=${datetime.split("T")[0]}&time=${datetime.split("T")[1]}&latitude=${latitude}&longitude=${longitude}&chart_type=transit`;
+
+      // 요청 header
+      const headers = new Headers();
+      headers.set('Authorization', 'Basic ' + btoa(APP_ID + ":" + APP_SECRET));
+
+      try {
+        const response = await fetch(url, { headers: headers });
+        const data = await response.json();
+
+        if (data.data && data.data.imageUrl) {
+          document.getElementById("chart").innerHTML =
+            `<img src="${data.data.imageUrl}" alt="Astro Chart">`;
+        } else {
+          document.getElementById("chart").innerHTML =
+            "<p>차트를 불러오지 못했습니다.</p>";
+          console.log(data);
+        }
+      } catch (error) {
+        document.getElementById("chart").innerHTML =
+          "<p>에러 발생! 콘솔을 확인하세요.</p>";
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
