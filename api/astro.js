@@ -23,8 +23,8 @@ export default async function handler(req, res) {
     const longitude = 126.9780;
 
     // 🔑 AstronomyAPI 키
-    const APP_ID = process.env.APP_ID;
-    const APP_SECRET = process.env.APP_SECRET;
+    const APP_ID = process.env.ASTRO_APP_ID;
+    const APP_SECRET = process.env.ASTRO_APP_SECRET;
 
     const url = `https://api.astronomyapi.com/api/v2/studio/astro_chart?latitude=${latitude}&longitude=${longitude}&datetime=${datetime}`;
 
@@ -48,3 +48,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "서버 오류 발생" });
   }
 }
+
