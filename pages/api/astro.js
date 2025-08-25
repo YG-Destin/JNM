@@ -1,4 +1,3 @@
-// /pages/api/astro.js  (Vercel 서버리스 함수)
 
 export default async function handler(req, res) {
   // ✅ CORS 헤더 (브라우저에서 호출 허용)
@@ -53,3 +52,4 @@ export default async function handler(req, res) {
   }
 
 }
+
