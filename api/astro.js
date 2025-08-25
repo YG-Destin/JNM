@@ -1,5 +1,7 @@
 // pages/api/astro.js  (Vercel 서버리스 함수)
 
+import {Buffer}from"buffer";
+
 // CORS 헤더 열기
 export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -37,4 +39,5 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "서버 오류 발생" });
   }
 }
+
 
