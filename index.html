@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>J & M 시너스트리 + 트랜싯</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin: 20px; }
+    #chart { margin-top: 20px; }
+    input, button { margin: 10px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <h2>J & M 시너스트리 + 트랜싯 (실제 천문)</h2>
+
+  <!-- 날짜/시간 입력 -->
+  <label for="datetime">날짜와 시간 선택:</label>
+  <input type="datetime-local" id="datetime" value="2025-09-03T12:00">
+  <button onclick="loadChart()">차트 불러오기</button>
+
+  <!-- 차트 출력 영역 -->
+  <div id="chart"></div>
+
+  <script>
+  async function loadChart() {
+    const datetime = document.getElementById("datetime").value;
+    if (!datetime) {
+      alert("날짜와 시간을 선택하세요!");
+      return;
+    }
+
+    // 🌐 Vercel 프록시 주소 
+    const url = `https://jnm-swart.vercel.app/api/astro?datetime=${datetime}`;
+
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.data && data.data.imageUrl) {
+        document.getElementById("chart").innerHTML =
+          `<img src="${data.data.imageUrl}" alt="Astro Chart">`;
+      } else {
+        document.getElementById("chart").innerHTML = "<p>차트를 불러오지 못했습니다.</p>";
+        console.log(data);
+      }
+    } catch (error) {
+      document.getElementById("chart").innerHTML = "<p>에러 발생! 콘솔을 확인하세요.</p>";
+      console.error(error);
+    }
+  }
+  </script>
+</body>
+</html>
