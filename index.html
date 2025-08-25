@@ -29,23 +29,31 @@
     }
 
     // 🌐 Vercel 프록시 주소 
-    const url = `https://jnm-swart.vercel.app/api/astro?datetime=${datetime}`;
+  try {
+  const response = await fetch("/api/astro", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      datetime,
+      latitude: 37.5665,
+      longitude: 126.9780
+    })
+  });
+  const data = await response.json();
 
-    try {
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.data && data.data.imageUrl) {
-        document.getElementById("chart").innerHTML =
-          `<img src="${data.data.imageUrl}" alt="Astro Chart">`;
-      } else {
-        document.getElementById("chart").innerHTML = "<p>차트를 불러오지 못했습니다.</p>";
-        console.log(data);
-      }
-    } catch (error) {
-      document.getElementById("chart").innerHTML = "<p>에러 발생! 콘솔을 확인하세요.</p>";
-      console.error(error);
-    }
+  if (data.data && data.data.imageUrl) {
+    document.getElementById("chart").innerHTML =
+      `<img src="${data.data.imageUrl}" alt="Astro Chart">`;
+  } else {
+    document.getElementById("chart").innerHTML =
+      "<p>차트를 불러오지 못했습니다.</p>";
+    console.log(data);
+  }
+} catch (error) {
+  document.getElementById("chart").innerHTML =
+    "<p>에러 발생! 콘솔을 확인하세요.</p>";
+  console.error(error);
+}
   }
   </script>
   <script src="api/astro.js"></script>
