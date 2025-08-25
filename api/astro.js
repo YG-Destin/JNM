@@ -23,19 +23,22 @@ export default async function handler(req, res) {
     const longitude = 126.9780;
 
     // 🔑 AstronomyAPI 키
-    const APP_ID = process.env.ASTRO_APP_ID;
-    const APP_SECRET = process.env.ASTRO_APP_SECRET;
+   const APP_ID = "1bae1d9c-b506-4b69-b06e-724f48c17ea2";
+const APP_SECRET = "f4fbdab592c38875ad0b31163d5f71bc97a04ebf3088f024e5cdf935a2cb9fc3752cd8ab71c7a65bf4cc06752773464de708a7eceda622b52f8eb114d4de39a05d71b9ea678c8d765067446ca495a8667ed2ff667a8add91869b59e764dacb538cba07f3f40b1030e816b007b97bcf5e";
 
-    const url = `https://api.astronomyapi.com/api/v2/studio/astro_chart?latitude=${latitude}&longitude=${longitude}&datetime=${datetime}`;
+async function getAstroData() {
+  const url = "https://api.astronomyapi.com/api/v2/studio/star-chart";
 
-    const response = await fetch(url, {
-      headers: {
-        Authorization: "Basic " + Buffer.from(APP_ID + ":" + APP_SECRET).toString("base64"),
-      },
-    });
+  const headers = new Headers();
+  headers.set("Authorization", "Basic " + btoa(APP_ID + ":" + APP_SECRET));
+  headers.set("Content-Type", "application/json");
 
-    const data = await response.json();
+  const response = await fetch(url, { headers: headers });
+  const data = await response.json();
+  console.log(data);
+}
 
+getAstroData();
     if (!response.ok) {
       return res.status(response.status).json(data);
     }
@@ -48,4 +51,5 @@ export default async function handler(req, res) {
     res.status(500).json({ error: "서버 오류 발생" });
   }
 }
+
 
